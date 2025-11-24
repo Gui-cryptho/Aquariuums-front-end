@@ -1,0 +1,73 @@
+# ============================
+# Node / Backend
+# ============================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.package-lock.json
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+*.pid
+*.seed
+*.pid.lock
+
+# Build / Output
+dist/
+build/
+out/
+.next/
+.vercel/
+.cache/
+coverage/
+
+# ============================
+# Frontend (Web)
+# ============================
+# Temp files
+*.tmp
+*.temp
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+
+# ============================
+# Frameworks / Bundlers
+# ============================
+# Vite
+vite.config.ts.timestamp*
+.vite/
+
+# Webpack
+webpack-stats.json
+
+# Parcel
+.cache/
+.parcel-cache/
+
+# Expo / React Native (se precisar)
+.expo/
+.expo-shared/
+android/
+ios/
+
+# ============================
+# Others
+# ============================
+*.env
+*.local
+*.bak
+*.backup
+*.old
