@@ -29,7 +29,6 @@ export function AquariumBubbles() {
 
       setBubbles((prev) => [...prev, newBubble]);
 
-      // Remove bubble after animation
       setTimeout(() => {
         setBubbles((prev) => prev.filter((b) => b.id !== newBubble.id));
       }, newBubble.duration * 1000);
@@ -42,17 +41,16 @@ export function AquariumBubbles() {
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden">
       {bubbles.map((bubble) => {
-        const style: React.CSSProperties & Record<string, string> = {
+        const style = {
           left: `${bubble.x}%`,
           bottom: `${bubble.y - 100}px`,
           width: `${bubble.size}px`,
           height: `${bubble.size}px`,
           animation: `rise ${bubble.duration}s ease-in forwards`,
-        };
-
-        // assign CSS custom properties per-bubble
-        style["--dx50" as any] = bubble.dx50;
-        style["--dx100" as any] = bubble.dx100;
+          // custom CSS vars
+          ["--dx50" as any]: bubble.dx50,
+          ["--dx100" as any]: bubble.dx100,
+        } as React.CSSProperties;
 
         return (
           <div

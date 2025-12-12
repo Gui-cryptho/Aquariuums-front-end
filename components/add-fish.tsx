@@ -7,30 +7,32 @@ interface AddFishProps {
     name: string;
     species: "goldfish" | "bluefish" | "greenfish" | "orangefish";
     dob: string;
-    imageUrl: string;
   }) => void;
 }
 
 export function AddFish({ onAdd }: AddFishProps) {
   const [open, setOpen] = useState(false);
+
   const [name, setName] = useState("");
   const [species, setSpecies] = useState<
     "goldfish" | "bluefish" | "greenfish" | "orangefish"
   >("goldfish");
+
   const [dob, setDob] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
 
   const reset = () => {
     setName("");
     setSpecies("goldfish");
     setDob("");
-    setImageUrl("");
   };
 
   const submit = (e?: React.FormEvent) => {
     e?.preventDefault();
+
     if (!name) return;
-    onAdd({ name, species, dob, imageUrl });
+
+    onAdd({ name, species, dob });
+
     reset();
     setOpen(false);
   };
@@ -46,7 +48,7 @@ export function AddFish({ onAdd }: AddFishProps) {
         +
       </button>
 
-      {/* Modal / panel */}
+      {/* Modal */}
       {open && (
         <div className="fixed inset-0 z-40 flex items-end md:items-center justify-center">
           <div
@@ -60,6 +62,7 @@ export function AddFish({ onAdd }: AddFishProps) {
           >
             <h3 className="text-lg font-semibold mb-3">Adicionar Peixe</h3>
 
+            {/* Nome */}
             <label className="block mb-2 text-sm">
               <span className="text-white/80">Nome</span>
               <input
@@ -70,11 +73,20 @@ export function AddFish({ onAdd }: AddFishProps) {
               />
             </label>
 
+            {/* Espécie */}
             <label className="block mb-2 text-sm">
               <span className="text-white/80">Espécie</span>
               <select
                 value={species}
-                onChange={(e) => setSpecies(e.target.value as any)}
+                onChange={(e) =>
+                  setSpecies(
+                    e.target.value as
+                      | "goldfish"
+                      | "bluefish"
+                      | "greenfish"
+                      | "orangefish"
+                  )
+                }
                 className="mt-1 block w-full rounded-md bg-white/5 border border-white/10 px-3 py-2 text-white"
               >
                 <option value="goldfish">Goldfish</option>
@@ -84,7 +96,8 @@ export function AddFish({ onAdd }: AddFishProps) {
               </select>
             </label>
 
-            <label className="block mb-2 text-sm">
+            {/* Data de nascimento */}
+            <label className="block mb-4 text-sm">
               <span className="text-white/80">Data de Nascimento</span>
               <input
                 type="date"
@@ -94,16 +107,7 @@ export function AddFish({ onAdd }: AddFishProps) {
               />
             </label>
 
-            <label className="block mb-4 text-sm">
-              <span className="text-white/80">URL da Imagem</span>
-              <input
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-                placeholder="https://..."
-                className="mt-1 block w-full rounded-md bg-white/5 border border-white/10 px-3 py-2 text-white"
-              />
-            </label>
-
+            {/* Botões */}
             <div className="flex gap-3">
               <button
                 type="submit"
@@ -111,6 +115,7 @@ export function AddFish({ onAdd }: AddFishProps) {
               >
                 Adicionar
               </button>
+
               <button
                 type="button"
                 onClick={() => setOpen(false)}

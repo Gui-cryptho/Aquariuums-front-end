@@ -1,6 +1,6 @@
 # Aquarium Simulation
 
-Um projeto Next.js + React que renderiza um aquário com peixes e bolhas animadas. Esta README descreve como configurar, rodar e depurar a aplicação localmente.
+Um projeto Next.js + React que renderiza um aquário animado, com autenticação JWT, CRUD de peixes por usuário, animação automática dos peixes e restrição de cadastro quando logado.
 
 **Local do projeto:** `./` (raiz do workspace)
 
@@ -112,6 +112,4 @@ pnpm run start
 
 Se quiser, cole aqui os erros do terminal ou prints do navegador e eu ajudo a depurar.
 
----
-
-README gerado automaticamente pelo assistente para facilitar setup e debugging.
+README atualizado para refletir as funcionalidades finais do projeto (dez/2025).

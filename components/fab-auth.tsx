@@ -1,64 +1,122 @@
 "use client";
 
 import React, { useState } from "react";
+import { criarUsuario } from "@/lib/api";
+import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
 
 export function FabAuth() {
   const router = useRouter();
+  const { login, logout } = useAuth();
   const [open, setOpen] = useState<null | "login" | "cadastro">(null);
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState<string | null>(null);
 
-  const submitLogin = (e?: React.FormEvent) => {
+  const submitLogin = async (e?: React.FormEvent) => {
     e?.preventDefault();
-    if (!name || !password) {
-      setMessage("Preencha nome e senha.");
+    if (!email || !password) {
+      setMessage("Preencha email e senha.");
       return;
     }
-    setMessage(`Entrando...`);
-    setTimeout(() => {
-      setMessage(null);
-      setOpen(null);
-      router.push("/");
-    }, 700);
+    setMessage("Entrando...");
+    const ok = await login(email, password);
+    if (ok) {
+      setMessage("Login realizado!");
+      setTimeout(() => {
+        setMessage(null);
+        setOpen(null);
+        setName("");
+        setEmail("");
+        setPassword("");
+        router.push("/");
+      }, 900);
+    } else {
+      setMessage("Email ou senha inválidos.");
+    }
   };
 
   const submitCadastro = (e?: React.FormEvent) => {
     e?.preventDefault();
+
     if (!name || !email || !password) {
       setMessage("Preencha todos os campos.");
       return;
     }
+
     setMessage("Criando conta...");
-    setTimeout(() => {
-      setMessage(null);
-      setOpen(null);
-      router.push("/login");
-    }, 900);
+
+    criarUsuario({
+      nome: name,
+      email,
+      senha: password,
+    })
+      .then((resultado) => {
+        console.log("Resposta da API:", resultado);
+
+        if (resultado && resultado.id) {
+          setMessage("Usuário criado com sucesso!");
+
+          setTimeout(() => {
+            setMessage(null);
+            setOpen(null);
+            setName("");
+            setEmail("");
+            setPassword("");
+          }, 1200);
+        } else {
+          setMessage(
+            "Erro ao criar usuário: " +
+              (resultado?.message || "Resposta inesperada.")
+          );
+        }
+      })
+      .catch((err) => {
+        console.error("Erro ao criar usuário:", err);
+        setMessage("Erro ao criar usuário.");
+      });
   };
 
   return (
     <div>
-      {/* two small stacked FABs */}
+      {/* Botões flutuantes */}
       <div className="fixed right-6 bottom-24 z-50 flex flex-col gap-3">
-        <button
-          onClick={() => setOpen("login")}
-          className="w-12 h-12 rounded-full bg-indigo-500 text-white flex items-center justify-center shadow-lg hover:bg-indigo-600"
-          title="Login"
-        >
-          🔒
-        </button>
-        <button
-          onClick={() => setOpen("cadastro")}
-          className="w-12 h-12 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-lg hover:bg-emerald-600"
-          title="Cadastro"
-        >
-          ✍️
-        </button>
+        {/* Se não estiver logado, mostra login e cadastro */}
+        {!useAuth().token && (
+          <>
+            <button
+              onClick={() => setOpen("login")}
+              className="w-12 h-12 rounded-full bg-indigo-500 text-white flex items-center justify-center shadow-lg hover:bg-indigo-600"
+              title="Login"
+            >
+              🔒
+            </button>
+            <button
+              onClick={() => setOpen("cadastro")}
+              className="w-12 h-12 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-lg hover:bg-emerald-600"
+              title="Cadastro"
+            >
+              ✍️
+            </button>
+          </>
+        )}
+        {/* Se estiver logado, mostra apenas botão de logout */}
+        {useAuth().token && (
+          <button
+            onClick={() => {
+              logout();
+              setOpen(null);
+            }}
+            className="w-12 h-12 rounded-full bg-red-500 text-white flex items-center justify-center shadow-lg hover:bg-red-600"
+            title="Sair"
+          >
+            ⎋
+          </button>
+        )}
       </div>
 
+      {/* Modal */}
       {open && (
         <div className="fixed inset-0 z-40 flex items-end md:items-center justify-center">
           <div
@@ -74,26 +132,29 @@ export function FabAuth() {
               {open === "login" ? "Entrar" : "Cadastro"}
             </h3>
 
+            {/* Email (login e cadastro) */}
             <label className="block mb-2 text-sm">
-              <span className="text-white/80">Nome</span>
+              <span className="text-white/80">Email</span>
               <input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="mt-1 block w-full rounded-md bg-white/5 border border-white/10 px-3 py-2 text-white"
               />
             </label>
-
+            {/* Nome apenas no cadastro */}
             {open === "cadastro" && (
               <label className="block mb-2 text-sm">
-                <span className="text-white/80">Email</span>
+                <span className="text-white/80">Nome</span>
                 <input
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                   className="mt-1 block w-full rounded-md bg-white/5 border border-white/10 px-3 py-2 text-white"
                 />
               </label>
             )}
 
+            {/* Senha */}
             <label className="block mb-4 text-sm">
               <span className="text-white/80">Senha</span>
               <input
@@ -104,6 +165,7 @@ export function FabAuth() {
               />
             </label>
 
+            {/* Botões */}
             <div className="flex gap-3">
               <button
                 type="submit"
@@ -111,6 +173,7 @@ export function FabAuth() {
               >
                 {open === "login" ? "Entrar" : "Cadastrar"}
               </button>
+
               <button
                 type="button"
                 onClick={() => setOpen(null)}
@@ -120,6 +183,7 @@ export function FabAuth() {
               </button>
             </div>
 
+            {/* Mensagens */}
             {message && <p className="mt-3 text-sm text-white/90">{message}</p>}
           </form>
         </div>
